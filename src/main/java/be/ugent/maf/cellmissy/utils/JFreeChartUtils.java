@@ -364,6 +364,17 @@ public class JFreeChartUtils {
         xYPlot.getDomainAxis().setRange(maxRange);
         xYPlot.getRangeAxis().setRange(maxRange);
     }
+    
+    public static void setupDoseResponseChart(JFreeChart chart){
+        // set title font
+        chart.getTitle().setFont(chartFont);
+        // get xyplot from the chart
+        XYPlot xYPlot = chart.getXYPlot();
+        setupXYPlot(xYPlot);
+        // get the xyseriescollection from the plot
+        XYSeriesCollection xYSeriesCollection = (XYSeriesCollection) xYPlot.getDataset();
+        
+    }
 
     /**
      * Plot error bars in both directions, vertical and horizontal
