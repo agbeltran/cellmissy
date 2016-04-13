@@ -13,8 +13,11 @@ import java.awt.Font;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.jfree.chart.ChartFactory;
@@ -52,8 +55,7 @@ public class JFreeChartUtils {
     // new line, enter
     private final static String newLine = "\n";
     // dashed line
-    private static final BasicStroke dashedLine = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke
-            .JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f);
+    private static final BasicStroke dashedLine = new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 1.0f, new float[]{6.0f, 6.0f}, 0.0f);
     // font for the chart elements
     private static final Font chartFont = new Font("Tahoma", Font.BOLD, 12);
     // line widths
@@ -82,7 +84,6 @@ public class JFreeChartUtils {
     }
 
     // public methods
-
     /**
      * Setup a x-y plot
      *
@@ -119,7 +120,7 @@ public class JFreeChartUtils {
      * @return the chart
      */
     public static JFreeChart generateDensityFunctionChart(PlateCondition plateCondition, int conditionIndex,
-                                                          XYSeriesCollection xYSeriesCollection, String chartTitle) {
+            XYSeriesCollection xYSeriesCollection, String chartTitle) {
         String specificChartTitle = chartTitle + " Condition " + conditionIndex + " (replicates)";
         JFreeChart densityChart = ChartFactory.createXYLineChart(specificChartTitle, "% increase (Area)", "Density",
                 xYSeriesCollection, PlotOrientation.VERTICAL, true, true, false);
@@ -279,12 +280,11 @@ public class JFreeChartUtils {
     /**
      * Setup replicates area chart
      *
-     * @param chart:     chart to setup
-     * @param wellList:  keep track of wells added, removed: list needed
+     * @param chart: chart to setup
+     * @param wellList: keep track of wells added, removed: list needed
      * @param plotLines: show lines on plot?
      */
-    public static void setupReplicatesAreaChart(JFreeChart chart, List<Well> wellList, boolean plotLines, boolean
-            plotPoints) {
+    public static void setupReplicatesAreaChart(JFreeChart chart, List<Well> wellList, boolean plotLines, boolean plotPoints) {
         // set title font
         chart.getTitle().setFont(chartFont);
         // put legend on the right edge
@@ -314,7 +314,7 @@ public class JFreeChartUtils {
     /**
      * Setup global area chart
      *
-     * @param chart:     chart to setup
+     * @param chart: chart to setup
      * @param plotLines: show lines on plot?
      */
     public static void setupGlobalAreaChart(JFreeChart chart, boolean plotLines, boolean plotPoints) {
@@ -364,8 +364,8 @@ public class JFreeChartUtils {
         xYPlot.getDomainAxis().setRange(maxRange);
         xYPlot.getRangeAxis().setRange(maxRange);
     }
-    
-    public static void setupDoseResponseChart(JFreeChart chart){
+
+    public static void setupDoseResponseChart(JFreeChart chart) {
         // set title font
         chart.getTitle().setFont(chartFont);
         // get xyplot from the chart
@@ -373,7 +373,7 @@ public class JFreeChartUtils {
         setupXYPlot(xYPlot);
         // get the xyseriescollection from the plot
         XYSeriesCollection xYSeriesCollection = (XYSeriesCollection) xYPlot.getDataset();
-        
+
     }
 
     /**
@@ -407,8 +407,7 @@ public class JFreeChartUtils {
      * @param valuesCollection
      * @param verticalErrors
      */
-    public static void plotVerticalErrorBars(JFreeChart chart, XYSeriesCollection valuesCollection, List<Double[]>
-            verticalErrors) {
+    public static void plotVerticalErrorBars(JFreeChart chart, XYSeriesCollection valuesCollection, List<Double[]> verticalErrors) {
         Stroke stroke = new BasicStroke();
         // get the plot from the chart
         XYPlot plot = chart.getXYPlot();
@@ -470,10 +469,10 @@ public class JFreeChartUtils {
     /**
      * Set up the single track plot.
      *
-     * @param chart:      the chart to get the plot from
+     * @param chart: the chart to get the plot from
      * @param trackIndex: we need this to get the right color
-     * @param inTime:     if true, the plot is in time, thus background is set to
-     *                    white and range does not have to be kept squared
+     * @param inTime: if true, the plot is in time, thus background is set to
+     * white and range does not have to be kept squared
      */
     public static void setupSingleTrackPlot(JFreeChart chart, int trackIndex, boolean inTime) {
         // set up the plot
@@ -496,6 +495,38 @@ public class JFreeChartUtils {
         // show line AND points
         renderer.setSeriesLinesVisible(0, true);
         renderer.setSeriesShapesVisible(0, true);
+    }
+
+    /**
+     * Generate an array of x values from a HashMap.
+     *
+     * @param data The HashMap that maps one x value to replicate y values.
+     * @return An array of x values duplicated to the according amount of
+     * replicates in the original map.
+     */
+    public static double[] generateXValues(LinkedHashMap<Double, List<Double>> data) {
+        List<Double> xValues = new ArrayList<>();
+        for (Map.Entry<Double,List<Double>> entry : data.entrySet()) {
+            for (int i = 0; i < entry.getValue().size(); i++) {
+                xValues.add(entry.getKey());
+            }
+        }
+        return ArrayUtils.toPrimitive(xValues.toArray(new Double[xValues.size()]));
+    }
+    
+    /**
+     * Generate an array of y values from a Hashmap.
+     * @param data The HashMap that maps one x value to replicate y values.
+     * @return An array of all y values in the original map
+     */
+    public static double[] generateYValues(LinkedHashMap<Double, List<Double>> data) {
+        List<Double> yValues = new ArrayList<>();
+        for (Map.Entry<Double,List<Double>> entry : data.entrySet()) {
+            for (Double yValue : entry.getValue()) {
+                yValues.add(yValue);
+            }
+        }
+        return ArrayUtils.toPrimitive(yValues.toArray(new Double[yValues.size()]));
     }
 
     /**
